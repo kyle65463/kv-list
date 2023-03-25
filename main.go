@@ -1,11 +1,22 @@
 package main
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/joho/godotenv"
 	"github.com/kyle65463/kv-list/controllers"
 )
+
+func init() {
+	// Initialize environment variables
+	err := godotenv.Load(".env")
+	if err != nil {
+		fmt.Println("Could not load .env file")
+		panic(err)
+	}
+}
 
 func main() {
 	r := gin.Default()
