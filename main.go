@@ -1,8 +1,8 @@
 package main
 
 import (
-	"fmt"
 	"net/http"
+	"os"
 
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
@@ -13,7 +13,6 @@ func init() {
 	// Initialize environment variables
 	err := godotenv.Load(".env")
 	if err != nil {
-		fmt.Println("Could not load .env file")
 		panic(err)
 	}
 }
@@ -35,7 +34,8 @@ func main() {
 	})
 
 	// Start server
-	if err := r.Run(":8080"); err != nil {
+	err := r.Run(":" + os.Getenv("PORT"))
+	if err != nil {
 		panic(err)
 	}
 }
