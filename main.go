@@ -4,17 +4,17 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/kyle65463/kv-list/controllers"
 )
 
 func main() {
 	r := gin.Default()
 
+	apiV1 := r.Group("/api/v1")
+
 	// Define routes
-	r.GET("/hello", func(c *gin.Context) {
-		c.JSON(http.StatusOK, gin.H{
-			"message": "Hello, World!",
-		})
-	})
+	apiV1.GET("/pages", controllers.GetPage)
+	apiV1.GET("/heads", controllers.GetHead)
 
 	// Handle 404 errors
 	r.NoRoute(func(c *gin.Context) {

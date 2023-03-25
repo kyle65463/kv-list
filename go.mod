@@ -1,4 +1,4 @@
-module kv-list
+module github.com/kyle65463/kv-list
 
 go 1.20
 
