@@ -28,6 +28,7 @@ func main() {
 
 	// Define routes
 	apiV1.GET("/pages", controllers.GetPage)
+	apiV1.POST("/pages", controllers.SetPage)
 	apiV1.GET("/heads", controllers.GetHead)
 
 	// Handle 404 errors
