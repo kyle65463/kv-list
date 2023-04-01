@@ -6,17 +6,18 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 	"github.com/kyle65463/kv-list/database"
 )
 
 type ListHeadResponse struct {
-	ID          *int `json:"id"`
-	NextPageKey *int `json:"nextPageKey"`
+	Key         *string `json:"key"`
+	NextPageKey *string `json:"nextPageKey"`
 }
 
 func GetListHead(c *gin.Context) {
 	// Parse request
-	id := c.Param("id")
+	key := c.Param("key")
 
 	// Acquire db connection
 	conn, err := database.DbPool.Acquire(context.Background())
@@ -32,9 +33,9 @@ func GetListHead(c *gin.Context) {
 	var page ListHeadResponse
 	err = conn.QueryRow(
 		context.Background(),
-		"SELECT id, next_page_key FROM lists WHERE id = $1",
-		id,
-	).Scan(&page.ID, &page.NextPageKey)
+		"SELECT key, next_page_key FROM lists WHERE key = $1",
+		key,
+	).Scan(&page.Key, &page.NextPageKey)
 	if err != nil {
 		// TODO: Handle no result error
 		c.JSON(http.StatusInternalServerError, gin.H{
@@ -56,6 +57,7 @@ func SetList(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
+	key := c.Param("key")
 
 	// Acquire db connection
 	conn, err := database.DbPool.Acquire(context.Background())
@@ -78,13 +80,14 @@ func SetList(c *gin.Context) {
 	defer tx.Rollback(context.Background())
 
 	// Insert pages from the last element of the list to the first element
-	var nextPageKey *int = nil
+	var nextPageKey *string = nil
 	for _, data := range list.Data {
+		pageKey := uuid.New() // Generate a random key for the new page
 		err = tx.QueryRow(context.Background(), `
-            INSERT INTO pages (data, next_page_key)
-            VALUES ($1, $2) RETURNING id
+            INSERT INTO pages (key, data, next_page_key)
+            VALUES ($1, $2, $3) RETURNING key
         `,
-			data, nextPageKey,
+			pageKey, data, nextPageKey,
 		).Scan(&nextPageKey)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -93,12 +96,13 @@ func SetList(c *gin.Context) {
 	}
 
 	// Insert the list head
-	err = tx.QueryRow(context.Background(), `
-	        INSERT INTO lists (next_page_key)
-	        VALUES ($1) RETURNING id
+	_, err = tx.Exec(context.Background(), `
+	        INSERT INTO lists (key, next_page_key)
+	        VALUES ($1, $2)
+			ON CONFLICT (key) DO UPDATE SET next_page_key = $2
 	    `,
-		nextPageKey,
-	).Scan(nextPageKey)
+		key, nextPageKey,
+	)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return

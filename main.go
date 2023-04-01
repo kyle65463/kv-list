@@ -27,9 +27,9 @@ func main() {
 	apiV1 := r.Group("/api/v1")
 
 	// Define routes
-	apiV1.GET("/pages/:id", controllers.GetPage)
-	apiV1.GET("/lists/:id", controllers.GetListHead)
-	apiV1.POST("/lists", controllers.SetList)
+	apiV1.GET("/pages/:key", controllers.GetPage)
+	apiV1.GET("/lists/:key", controllers.GetListHead)
+	apiV1.POST("/lists/:key", controllers.SetList)
 
 	// Handle 404 errors
 	r.NoRoute(func(c *gin.Context) {

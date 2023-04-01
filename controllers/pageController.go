@@ -10,14 +10,14 @@ import (
 )
 
 type PageResponse struct {
-	ID          *int   `json:"id"`
-	Data        []byte `json:"data"`
-	NextPageKey *int   `json:"nextPageKey"`
+	Key         *string `json:"key"`
+	Data        []byte  `json:"data"`
+	NextPageKey *string `json:"nextPageKey"`
 }
 
 func GetPage(c *gin.Context) {
 	// Parse request
-	id := c.Param("id")
+	key := c.Param("key")
 
 	// Acquire db connection
 	conn, err := database.DbPool.Acquire(context.Background())
@@ -33,9 +33,9 @@ func GetPage(c *gin.Context) {
 	var page PageResponse
 	err = conn.QueryRow(
 		context.Background(),
-		"SELECT id, data, next_page_key FROM pages WHERE id = $1",
-		id,
-	).Scan(&page.ID, &page.Data, &page.NextPageKey)
+		"SELECT key, data, next_page_key FROM pages WHERE key = $1",
+		key,
+	).Scan(&page.Key, &page.Data, &page.NextPageKey)
 	if err != nil {
 		// TODO: Handle no result error
 		c.JSON(http.StatusInternalServerError, gin.H{
