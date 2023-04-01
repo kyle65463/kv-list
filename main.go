@@ -30,6 +30,7 @@ func main() {
 	apiV1.GET("/pages/:id", controllers.GetPage)
 	apiV1.POST("/pages", controllers.SetPage)
 	apiV1.GET("/lists/:id", controllers.GetListHead)
+	apiV1.POST("/lists", controllers.SetList)
 
 	// Handle 404 errors
 	r.NoRoute(func(c *gin.Context) {
