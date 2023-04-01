@@ -114,5 +114,7 @@ func SetList(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, list)
+	c.JSON(http.StatusOK, gin.H{
+		"message": "Set the list successfully",
+	})
 }
