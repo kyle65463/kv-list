@@ -10,7 +10,7 @@ import (
 func TestShouldGetListHeadWithoutNextPageKey(t *testing.T) {
 	// Setup the test
 	data := ListHeadResponse{
-		Key:         "test-list",
+		Key:         "bc8f16c3-521b-4d76-8d2f-61147454c430",
 		NextPageKey: nil,
 	}
 	mock, c, w := setupTest(t, gin.Params{{Key: "key", Value: data.Key}})
@@ -31,7 +31,7 @@ func TestShouldGetListHeadWithoutNextPageKey(t *testing.T) {
 func TestShouldGetListHeadWithNextPageKey(t *testing.T) {
 	// Setup the test
 	data := ListHeadResponse{
-		Key:         "test-list",
+		Key:         "bc8f16c3-521b-4d76-8d2f-61147454c430",
 		NextPageKey: stringPtr("94c7a446-149c-436a-ab6f-9aa67fe4d09d"),
 	}
 	mock, c, w := setupTest(t, gin.Params{{Key: "key", Value: data.Key}})
@@ -51,12 +51,12 @@ func TestShouldGetListHeadWithNextPageKey(t *testing.T) {
 
 func TestShouldRespondBadRequestWhenNoListHeadFound(t *testing.T) {
 	// Setup the test
-	key := "test-list"
-	mock, c, w := setupTest(t, gin.Params{{Key: "key", Value: key}})
+	listKey := "bc8f16c3-521b-4d76-8d2f-61147454c430"
+	mock, c, w := setupTest(t, gin.Params{{Key: "key", Value: listKey}})
 
 	// Mock the empty query
 	rows := mock.NewRows([]string{"key", "next_page_key"})
-	mock.ExpectQuery("SELECT key, next_page_key FROM lists").WithArgs(key).WillReturnRows(rows)
+	mock.ExpectQuery("SELECT key, next_page_key FROM lists").WithArgs(listKey).WillReturnRows(rows)
 
 	// Call the GetPage function
 	GetListHead(mock)(c)

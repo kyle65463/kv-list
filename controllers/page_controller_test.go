@@ -10,7 +10,9 @@ import (
 func TestShouldGetPageWithoutNextPageKey(t *testing.T) {
 	// Setup the test
 	data := PageResponse{
-		Key: "test_key", Data: []byte("dGVzdF9kYXRh"), NextPageKey: nil,
+		Key:         "957e0240-5e40-4241-8c8f-c27cf21bce0a",
+		Data:        []byte("dGVzdF9kYXRh"),
+		NextPageKey: nil,
 	}
 	mock, c, w := setupTest(t, gin.Params{{Key: "key", Value: data.Key}})
 
@@ -30,7 +32,9 @@ func TestShouldGetPageWithoutNextPageKey(t *testing.T) {
 func TestShouldGetPageWithNextPageKey(t *testing.T) {
 	// Setup the test
 	data := PageResponse{
-		Key: "test_key", Data: []byte("bc55e8efdf"), NextPageKey: stringPtr("c9fc1f0a-8b56-4167-a638-38d04841be1f"),
+		Key:         "957e0240-5e40-4241-8c8f-c27cf21bce0a",
+		Data:        []byte("dGVzdF9kYXRh"),
+		NextPageKey: stringPtr("c9fc1f0a-8b56-4167-a638-38d04841be1f"),
 	}
 	mock, c, w := setupTest(t, gin.Params{{Key: "key", Value: data.Key}})
 
@@ -49,12 +53,12 @@ func TestShouldGetPageWithNextPageKey(t *testing.T) {
 
 func TestShouldRespondBadRequestWhenNoPageFound(t *testing.T) {
 	// Setup the test
-	key := "test_key"
-	mock, c, w := setupTest(t, gin.Params{{Key: "key", Value: key}})
+	pageKey := "957e0240-5e40-4241-8c8f-c27cf21bce0a"
+	mock, c, w := setupTest(t, gin.Params{{Key: "key", Value: pageKey}})
 
 	// Mock the empty query
 	rows := mock.NewRows([]string{"key", "data", "next_page_key"})
-	mock.ExpectQuery("SELECT key, data, next_page_key FROM pages").WithArgs(key).WillReturnRows(rows)
+	mock.ExpectQuery("SELECT key, data, next_page_key FROM pages").WithArgs(pageKey).WillReturnRows(rows)
 
 	// Call the GetPage function
 	GetPage(mock)(c)
