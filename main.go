@@ -17,11 +17,18 @@ func init() {
 		panic(err)
 	}
 
-	// Connect to the database
+	// Establish database connection
 	database.CreateDbConnection()
 }
 
+func cleanup() {
+	// Close the database connection
+	database.CloseDbConnection()
+}
+
 func main() {
+	defer cleanup()
+
 	r := gin.Default()
 
 	apiV1 := r.Group("/api/v1")

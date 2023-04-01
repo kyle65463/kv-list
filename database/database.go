@@ -20,3 +20,7 @@ func CreateDbConnection() {
 		os.Exit(1)
 	}
 }
+
+func CloseDbConnection() {
+	DbPool.Close()
+}
