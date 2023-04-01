@@ -29,7 +29,7 @@ func GetPage(c *gin.Context) {
 	}
 	defer conn.Release()
 
-	// Insert the page from db
+	// Read the page from db
 	var page PageResponse
 	err = conn.QueryRow(
 		context.Background(),
@@ -53,8 +53,8 @@ func SetPage(c *gin.Context) {
 		Data        *[]byte `json:"data"`
 		NextPageKey *int    `json:"nextPageKey"`
 	}
-	var p body
-	if err := c.ShouldBindJSON(&p); err != nil {
+	var page body
+	if err := c.ShouldBindJSON(&page); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
@@ -74,12 +74,12 @@ func SetPage(c *gin.Context) {
             INSERT INTO pages (data, next_page_key)
             VALUES ($1, $2)
         `,
-		p.Data, p.NextPageKey,
+		page.Data, page.NextPageKey,
 	)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
-	c.JSON(http.StatusOK, p)
+	c.JSON(http.StatusOK, page)
 }
