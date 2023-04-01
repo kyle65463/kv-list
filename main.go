@@ -7,6 +7,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
 	"github.com/kyle65463/kv-list/controllers"
+	"github.com/kyle65463/kv-list/database"
 )
 
 func init() {
@@ -15,6 +16,9 @@ func init() {
 	if err != nil {
 		panic(err)
 	}
+
+	// Connect to the database
+	database.CreateDbConnection()
 }
 
 func main() {
