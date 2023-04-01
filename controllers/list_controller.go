@@ -10,8 +10,8 @@ import (
 )
 
 type ListHeadResponse struct {
-	Key         string `json:"key"`
-	NextPageKey string `json:"nextPageKey"`
+	Key         string  `json:"key"`
+	NextPageKey *string `json:"nextPageKey"`
 }
 
 func GetListHead(db database.PgxInterface) func(c *gin.Context) {
