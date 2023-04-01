@@ -44,3 +44,7 @@ func setupTest(t *testing.T, params []gin.Param) (pgxmock.PgxConnIface, *gin.Con
 
 	return mock, c, w
 }
+
+func stringPtr(s string) *string {
+	return &s
+}
