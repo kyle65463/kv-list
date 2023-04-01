@@ -27,7 +27,7 @@ func main() {
 	apiV1 := r.Group("/api/v1")
 
 	// Define routes
-	apiV1.GET("/pages", controllers.GetPage)
+	apiV1.GET("/pages/:id", controllers.GetPage)
 	apiV1.POST("/pages", controllers.SetPage)
 	apiV1.GET("/heads", controllers.GetHead)
 
