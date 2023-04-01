@@ -28,7 +28,6 @@ func main() {
 
 	// Define routes
 	apiV1.GET("/pages/:id", controllers.GetPage)
-	apiV1.POST("/pages", controllers.SetPage)
 	apiV1.GET("/lists/:id", controllers.GetListHead)
 	apiV1.POST("/lists", controllers.SetList)
 
