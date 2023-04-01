@@ -2,11 +2,11 @@ package controllers
 
 import (
 	"context"
-	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
+	"github.com/jackc/pgx/v4"
 	"github.com/kyle65463/kv-list/database"
 )
 
@@ -22,9 +22,7 @@ func GetListHead(c *gin.Context) {
 	// Acquire db connection
 	conn, err := database.DbPool.Acquire(context.Background())
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"error": fmt.Sprintf("Failed to acquire connection"),
-		})
+		c.Status(http.StatusInternalServerError)
 		return
 	}
 	defer conn.Release()
@@ -37,10 +35,15 @@ func GetListHead(c *gin.Context) {
 		key,
 	).Scan(&page.Key, &page.NextPageKey)
 	if err != nil {
-		// TODO: Handle no result error
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"error": fmt.Sprintf("Failed to query database: %v", err),
-		})
+		if err == pgx.ErrNoRows {
+			// No result found
+			c.JSON(http.StatusBadRequest, gin.H{
+				"error": "No result found",
+			})
+		} else {
+			// Other errors
+			c.Status(http.StatusInternalServerError)
+		}
 		return
 	}
 
@@ -62,9 +65,7 @@ func SetList(c *gin.Context) {
 	// Acquire db connection
 	conn, err := database.DbPool.Acquire(context.Background())
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"error": fmt.Sprintf("Failed to acquire connection"),
-		})
+		c.Status(http.StatusInternalServerError)
 		return
 	}
 	defer conn.Release()
@@ -72,9 +73,7 @@ func SetList(c *gin.Context) {
 	// Begin the transaction
 	tx, err := conn.Begin(context.Background())
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"error": fmt.Sprintf("Failed to begin the transaction"),
-		})
+		c.Status(http.StatusInternalServerError)
 		return
 	}
 	defer tx.Rollback(context.Background())
@@ -90,7 +89,7 @@ func SetList(c *gin.Context) {
 			pageKey, data, nextPageKey,
 		).Scan(&nextPageKey)
 		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			c.Status(http.StatusInternalServerError)
 			return
 		}
 	}
@@ -104,12 +103,16 @@ func SetList(c *gin.Context) {
 		key, nextPageKey,
 	)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.Status(http.StatusInternalServerError)
 		return
 	}
 
 	// Commit the transaction
-	tx.Commit(context.Background())
+	err = tx.Commit(context.Background())
+	if err != nil {
+		c.Status(http.StatusInternalServerError)
+		return
+	}
 
 	c.JSON(http.StatusOK, list)
 }

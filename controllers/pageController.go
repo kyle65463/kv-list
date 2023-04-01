@@ -2,10 +2,10 @@ package controllers
 
 import (
 	"context"
-	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/jackc/pgx/v4"
 	"github.com/kyle65463/kv-list/database"
 )
 
@@ -22,9 +22,7 @@ func GetPage(c *gin.Context) {
 	// Acquire db connection
 	conn, err := database.DbPool.Acquire(context.Background())
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"error": fmt.Sprintf("Failed to acquire connection"),
-		})
+		c.Status(http.StatusInternalServerError)
 		return
 	}
 	defer conn.Release()
@@ -37,10 +35,15 @@ func GetPage(c *gin.Context) {
 		key,
 	).Scan(&page.Key, &page.Data, &page.NextPageKey)
 	if err != nil {
-		// TODO: Handle no result error
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"error": fmt.Sprintf("Failed to query database: %v", err),
-		})
+		if err == pgx.ErrNoRows {
+			// No result found
+			c.JSON(http.StatusBadRequest, gin.H{
+				"error": "No result found",
+			})
+		} else {
+			// Other errors
+			c.Status(http.StatusInternalServerError)
+		}
 		return
 	}
 
