@@ -1,7 +1,6 @@
 package main
 
 import (
-	"net/http"
 	"os"
 
 	"github.com/gin-gonic/gin"
@@ -29,23 +28,14 @@ func cleanup() {
 func main() {
 	defer cleanup()
 
-	r := gin.Default()
-
-	apiV1 := r.Group("/api/v1")
-
 	// Define routes
+	r := gin.Default()
+	apiV1 := r.Group("/api/v1")
 	apiV1.GET("/pages/:key", controllers.GetPage)
 	apiV1.GET("/lists/:key", controllers.GetListHead)
 	apiV1.POST("/lists/:key", controllers.SetList)
 
-	// Handle 404 errors
-	r.NoRoute(func(c *gin.Context) {
-		c.JSON(http.StatusNotFound, gin.H{
-			"error": "404 not found",
-		})
-	})
-
-	// Start server
+	// Start the server
 	err := r.Run(":" + os.Getenv("PORT"))
 	if err != nil {
 		panic(err)
