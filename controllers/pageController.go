@@ -83,9 +83,3 @@ func SetPage(c *gin.Context) {
 
 	c.JSON(http.StatusOK, p)
 }
-
-func GetHead(c *gin.Context) {
-	c.JSON(http.StatusNotImplemented, gin.H{
-		"message": "Get Head",
-	})
-}
