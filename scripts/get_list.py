@@ -1,5 +1,12 @@
 import requests
 import sys
+import base64
+
+def decode(str):
+    base64_bytes = str.encode("utf-8")
+    string_bytes = base64.b64decode(base64_bytes)
+    string = string_bytes.decode("utf-8")
+    return string
 
 if len(sys.argv) != 2:
     print("Usage: python get_list.py <list_key> [base_endpoint_url]")
@@ -26,7 +33,7 @@ while next_page_key != None:
     body = res.json()
     next_page_key = body["nextPageKey"]
     page_data = body["data"]
-    pages_data.append(page_data)
+    pages_data.append(decode(page_data))
 
 # Print the result
 print({
