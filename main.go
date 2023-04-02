@@ -20,18 +20,12 @@ func init() {
 	database.CreateDbConnection()
 }
 
-func cleanup() {
-	// Close the database connection
-	database.CloseDbConnection()
-}
-
 func main() {
-	defer cleanup()
-
 	// Define routes
 	r := gin.Default()
 	apiV1 := r.Group("/api/v1")
 	apiV1.GET("/pages/:key", controllers.GetPage(database.DbPool))
+	apiV1.DELETE("/pages", controllers.DeletePages(database.DbPool))
 	apiV1.GET("/lists/:key", controllers.GetListHead(database.DbPool))
 	apiV1.POST("/lists/:key", controllers.SetList(database.DbPool))
 
