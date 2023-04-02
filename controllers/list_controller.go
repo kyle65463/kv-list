@@ -73,7 +73,8 @@ func SetList(db database.PgxInterface) func(c *gin.Context) {
 
 		// Insert pages from the last element of the list to the first element
 		var nextPageKey *string = nil
-		for _, data := range list.Data {
+		for i := len(list.Data) - 1; i >= 0; i-- {
+			data := list.Data[i]
 			pageKey := uuid.New() // Generate a random key for the new page
 			err = tx.QueryRow(context.Background(), `
 				INSERT INTO pages (key, data, next_page_key)
