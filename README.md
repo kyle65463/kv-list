@@ -30,7 +30,7 @@ Notes: 因為 base requirements 只有 Get Head / Get Page API，因此沒有撰
 ## DB
 
 ### DBMS
-DBMS 使用 Postgres，因為在考慮高流量的情況下，Postgres 的效能會較好一些（https://itnext.io/benchmark-databases-in-docker-mysql-postgresql-sql-server-7b129368eed7 ）。並且 Postgres 更嚴格的符合了 ACID，能保證資料的完整性。而在開發上，Postgres 的資料型別相對多元且彈性，像是可以儲存 array、json（雖然沒用到）。
+DBMS 使用 Postgres，因為在考慮高流量的情況下，Postgres 的效能會較好一些（https://itnext.io/benchmark-databases-in-docker-mysql-postgresql-sql-server-7b129368eed7 ）。並且 Postgres 更嚴格的符合了 ACID，能保證資料的完整性。而在開發上，Postgres 的資料型別相對多元且彈性，像是可以儲存 array、json（雖然沒用到），因此我認為使用 Postgres 會比較合適。
 
 
 ### Schema
@@ -112,3 +112,19 @@ DELETE /api/v1/pages?interval=<interval>&limit=<limit>
 Notes: 一定要傳入 interval 參數，limit 參數為 optional。
 
 其他可能的刪除方式：在 page 上多紀錄它屬於的列表的 key，每次刪除的時候以列表為單位進行刪除（`DELETE FROM pages WHERE list_key < <list_key>`）。
+
+## Helper scripts
+
+提供了兩個 scripts，`set_list.py` 與 `get_list.py`，方便 debug 與測試。在執行前須先執行 server。
+
+### set_list.py
+```
+python scripts/set_list.py <list_key> [base_endpoint_url]
+```
+可以透過 set list api 去新增 / 更新一個列表，列表的內容可以在 `set_list.py` 中定義。若沒指定 `base_endpoint_url`，預設則為 `http://localhost:8080`。
+
+### get_list.py
+```
+python scripts/get_list.py <list_key> [base_endpoint_url]
+```
+遞迴取得一個列表的所有頁面。若沒指定 `base_endpoint_url`，預設則為 `http://localhost:8080`。
