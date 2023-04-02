@@ -61,9 +61,9 @@ CREATE TABLE IF NOT EXISTS lists (
 GET /api/v1/lists/:key
 
 Response:
-type PageResponse struct {
+
+type ListHeadResponse struct {
 	Key         string  `json:"key"`
-	Data        []byte  `json:"data"`
 	NextPageKey *string `json:"nextPageKey"`
 }
 ```
@@ -76,13 +76,14 @@ type PageResponse struct {
 GET /api/v1/pages/:key
 
 Response:
-type ListHeadResponse struct {
+type PageResponse struct {
 	Key         string  `json:"key"`
+	Data        []byte  `json:"data"`
 	NextPageKey *string `json:"nextPageKey"`
 }
 ```
 
-取得 key 對應的 page。
+取得 key 對應的 page，回傳的 data 會是 base64 string。
 
 ### Set list
 
@@ -95,9 +96,8 @@ type body struct {
 }
 ```
 
-為了方便使用，可以一次 set 列表的所有 page。Request body 的 data 中的每個元素皆對應到一個 page 的儲存內容。
-
-若該列表原本已存在，會直接覆蓋掉成要 set 的列表。
+為了方便使用，可以一次建立列表的所有 page。Request body 的 data 為一個陣列，元素為 base64 string，一個元素分別對應到一個 page 的儲存內容，並且
+會按照給入的順序建立 pages。若該列表原本已存在，會直接覆蓋成新的列表。
 
 Nice to have: 可以多一個 append pages 的 api，會直接把 pages 加在原本列表的後面，而不是直接覆蓋掉整個列表。
 
@@ -121,7 +121,7 @@ Notes: 一定要傳入 interval 參數，limit 參數為 optional。
 ```
 python scripts/set_list.py <list_key> [base_endpoint_url]
 ```
-可以透過 set list api 去新增 / 更新一個列表，列表的內容可以在 `set_list.py` 中定義。若沒指定 `base_endpoint_url`，預設則為 `http://localhost:8080`。
+可以透過 set list api 去新增一個列表，列表的內容可以在 `set_list.py` 中修改。若沒指定 `base_endpoint_url`，預設則為 `http://localhost:8080`。
 
 ### get_list.py
 ```
