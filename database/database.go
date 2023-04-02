@@ -17,19 +17,15 @@ type PgxInterface interface {
 	Close(context.Context) error
 }
 
-var DbPool PgxInterface
 
-func CreateDbConnection() {
+func CreateDbConnection() PgxInterface {
 	dbUrl := os.Getenv("DATABASE_URL")
 
-	var err error
-	DbPool, err = pgx.Connect(context.Background(), dbUrl)
+	dbPool, err := pgx.Connect(context.Background(), dbUrl)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Couldn't connect to the database: %v\n", err)
 		os.Exit(1)
 	}
-}
 
-func CloseDbConnection() {
-	DbPool.Close(context.Background())
+	return dbPool
 }

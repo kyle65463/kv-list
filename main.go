@@ -9,6 +9,8 @@ import (
 	"github.com/kyle65463/kv-list/database"
 )
 
+var dbPool database.PgxInterface
+
 func init() {
 	// Initialize environment variables
 	err := godotenv.Load(".env")
@@ -17,17 +19,17 @@ func init() {
 	}
 
 	// Establish database connection
-	database.CreateDbConnection()
+	dbPool = database.CreateDbConnection()
 }
 
 func main() {
 	// Define routes
 	r := gin.Default()
 	apiV1 := r.Group("/api/v1")
-	apiV1.GET("/pages/:key", controllers.GetPage(database.DbPool))
-	apiV1.DELETE("/pages", controllers.DeletePages(database.DbPool))
-	apiV1.GET("/lists/:key", controllers.GetListHead(database.DbPool))
-	apiV1.POST("/lists/:key", controllers.SetList(database.DbPool))
+	apiV1.GET("/pages/:key", controllers.GetPage(dbPool))
+	apiV1.DELETE("/pages", controllers.DeletePages(dbPool))
+	apiV1.GET("/lists/:key", controllers.GetListHead(dbPool))
+	apiV1.POST("/lists/:key", controllers.SetList(dbPool))
 
 	// Start the server
 	err := r.Run(":" + os.Getenv("PORT"))
