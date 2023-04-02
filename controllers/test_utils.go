@@ -2,7 +2,6 @@ package controllers
 
 import (
 	"bytes"
-	"context"
 	"encoding/json"
 	"net/http/httptest"
 	"testing"
@@ -34,7 +33,6 @@ func setupTest(t *testing.T, params []gin.Param) (pgxmock.PgxConnIface, *gin.Con
 	if err != nil {
 		t.Fatal(err)
 	}
-	defer mock.Close(context.Background())
 
 	// Set up the Gin context
 	gin.SetMode(gin.TestMode)

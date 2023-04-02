@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"context"
 	"net/http"
 	"testing"
 
@@ -14,6 +15,7 @@ func TestShouldGetListHeadWithoutNextPageKey(t *testing.T) {
 		NextPageKey: nil,
 	}
 	mock, c, w := setupTest(t, gin.Params{{Key: "key", Value: data.Key}})
+	defer mock.Close(context.Background())
 
 	// Mock the query
 	rows := mock.NewRows([]string{"key", "next_page_key"}).
@@ -35,6 +37,7 @@ func TestShouldGetListHeadWithNextPageKey(t *testing.T) {
 		NextPageKey: stringPtr("94c7a446-149c-436a-ab6f-9aa67fe4d09d"),
 	}
 	mock, c, w := setupTest(t, gin.Params{{Key: "key", Value: data.Key}})
+	defer mock.Close(context.Background())
 
 	// Mock the query
 	rows := mock.NewRows([]string{"key", "next_page_key"}).
@@ -53,6 +56,7 @@ func TestShouldRespondBadRequestWhenNoListHeadFound(t *testing.T) {
 	// Setup the test
 	listKey := "bc8f16c3-521b-4d76-8d2f-61147454c430"
 	mock, c, w := setupTest(t, gin.Params{{Key: "key", Value: listKey}})
+	defer mock.Close(context.Background())
 
 	// Mock the empty query
 	rows := mock.NewRows([]string{"key", "next_page_key"})
