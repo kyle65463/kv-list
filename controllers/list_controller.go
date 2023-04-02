@@ -76,9 +76,9 @@ func SetList(db database.PgxInterface) func(c *gin.Context) {
 		for _, data := range list.Data {
 			pageKey := uuid.New() // Generate a random key for the new page
 			err = tx.QueryRow(context.Background(), `
-            INSERT INTO pages (key, data, next_page_key)
-            VALUES ($1, $2, $3) RETURNING key
-        `,
+				INSERT INTO pages (key, data, next_page_key)
+				VALUES ($1, $2, $3) RETURNING key
+			`,
 				pageKey, data, nextPageKey,
 			).Scan(&nextPageKey)
 			if err != nil {
