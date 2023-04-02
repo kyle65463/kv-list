@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"os"
 
 	"github.com/gin-gonic/gin"
@@ -23,6 +24,8 @@ func init() {
 }
 
 func main() {
+	defer dbPool.Close(context.Background())
+
 	// Define routes
 	r := gin.Default()
 	apiV1 := r.Group("/api/v1")
